@@ -1,0 +1,48 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: proxy
+spec:
+  selector:
+    app: node-chat-app
+    tier: frontend
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: http
+  type: NodePort
+  # type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: proxy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: node-chat-app
+        tier: frontend
+        track: stable
+    spec:
+      containers:
+        - name: "proxy"
+          image: "nginx-gcsfuse:v1"
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - SYS_ADMIN
+        ports:
+          - name: http
+            containerPort: 8080
+        lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx","-s","quit","&&","fusermount", "-u", "$FUSE_MOUNT_DIR"]
+        env:
+          - name: FUSE_MOUNT_DIR
+            value: "/bucket"
+          - name: FUSE_BUCKET_NAME
+            value: "node-chat-bucket"

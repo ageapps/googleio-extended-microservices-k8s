@@ -1,0 +1,27 @@
+version: "2.1"
+services:
+  server_dev:
+    build: ./server/app
+    ports:
+      - "8080:4000"
+    volumes:
+      - ./server/app:/app
+    depends_on:
+      db_dev:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db_dev
+      - UPLOAD_PATH=./uploads
+      # - UPLOAD_PATH=./public/images
+      # - MEDIA_PROXY_PATH=/images
+
+  db_dev:
+    image: mongo
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "echo", "show dbs", "|", "mongo"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    command: mongod --smallfiles
