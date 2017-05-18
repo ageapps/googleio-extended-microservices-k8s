@@ -11,7 +11,7 @@ spec:
       port: 80
       targetPort: http
   # type: NodePort
-  # type: LoadBalancer
+  type: LoadBalancer
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -28,31 +28,49 @@ spec:
     spec:
       containers:
         - name: "node-chat"
-          image: "ageapps/docker-chat:app"
+          image: "ageapps/googleio-extended-microservices-k8s:bucket"
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - SYS_ADMIN
           ports:
             - name: http
               containerPort: 8080
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx","-s","quit","&&","fusermount", "-u", "$FUSE_MOUNT_DIR"]           
           env:
+            - name: UPLOAD_PATH
+              value: ./public/bucket/images
+            - name: MEDIA_PROXY_PATH
+              value: /bucket/images
+            - name: FUSE_MOUNT_DIR
+              value: "./public/bucket"
+            - name: FUSE_BUCKET_NAME
+              value: "node-chat-bucket"  
             - name: "PORT"
               value: "8080"
             - name: "DB_PORT"
               value: "27017"
             - name: "DB_HOST"
               value: "mongo"
-            - name: "DB_HOST"
-              value: "mongo"
-            - name: MONGO_DB_APP_USERNAME
+            - name: "GOOGLE_APPLICATION_CREDENTIALS"
+              value: "/server/credentials.json"
+            - name: MONGO_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: mongo
                   key: username
-            - name: MONGO_DB_APP_PASSWORD
+            - name: MONGO_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mongo
                   key: password
-            - name: MONGO_DB_APP_DATABASE
+            - name: MONGO_DATABASE
               valueFrom:
                 secretKeyRef:
                   name: mongo
                   key: database
+            

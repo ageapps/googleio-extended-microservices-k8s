@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: "mongo-chat"
-          image: "ageapps/docker-chat:mongo"
+          image: "ageapps/googleio-extended-microservices-k8s:mongo"
           env:
             - name: MONGO_DB_APP_USERNAME
               valueFrom:
