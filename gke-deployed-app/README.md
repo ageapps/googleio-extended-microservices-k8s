@@ -1,5 +1,7 @@
 # Deplopy an application in Kubernetes with GKE
 
+![app](../art/demo4.png)
+
 First of all, let´s create a new cluster on [GKE].
 
 ```

@@ -1,9 +1,12 @@
 # Deplopy an application in Kubernetes with minikube + Cloud Storage
 
+
 ## 1. Try new app version in docker-compose
 This time ther's a modified version of the chat under the ``/server`` folder. This app supports user avatars, this means that every user can upload a profile photo and it has to be stored anywhere inside the container. 
 
 ### 1.1 With a local volume
+![app](../art/demo3.1.1.png)
+
 For this, the best approach when you are developing in a local enviroment is to mount a ``volume``into our host.
 This is defined inside the ``docker-compose.yml``like this:
 ```
@@ -25,6 +28,8 @@ docker-compose up
 Then, check that the uploaded appear inside the ``./app/public/uploads`` folder
 
 ### 1.2 With Cloud Storage
+![app](../art/demo3.1.2.png)
+
 First of all yu have to create a [Cloud Storage] bucket inside your google clud plattform console.
 After you have to download the [Google application default credentials] in order to download your credentials.json to be able to use the bucket outside Google Cloud Plattform.
 
@@ -42,6 +47,7 @@ docker-compose -f docker-compose.bucket.yml up
 [here]:https://github.com/ageapps/k8s-storage-buckets
 
 ## 2. Deploying in Kubernetes
+![app](../art/demo3.2.png)
 
 ### 2.1 Creating Secrets
 In order to maintain the credentials safe we are going to create a [secret](https://kubernetes.io/docs/concepts/configuration/secret/) with all credentials related to the database.
