@@ -1,4 +1,4 @@
 node_modules
-credentials/*
-uploads/*
-database/*
+credentials.json
+uploads
+database
