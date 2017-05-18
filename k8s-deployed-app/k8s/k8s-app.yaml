@@ -1,0 +1,58 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: app
+spec:
+  selector:
+    app: node-chat-app
+    tier: backend
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: http
+  # type: NodePort
+  # type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: node-chat-app
+        tier: backend
+        track: stable
+    spec:
+      containers:
+        - name: "node-chat"
+          image: "ageapps/docker-chat:app"
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: "PORT"
+              value: "8080"
+            - name: "DB_PORT"
+              value: "27017"
+            - name: "DB_HOST"
+              value: "mongo"
+            - name: "DB_HOST"
+              value: "mongo"
+            - name: MONGO_DB_APP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo
+                  key: username
+            - name: MONGO_DB_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo
+                  key: password
+            - name: MONGO_DB_APP_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mongo
+                  key: database

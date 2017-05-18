@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: node-chat-app
+    tier: db
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: http
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: node-chat-app
+        tier: db
+        track: stable
+    spec:
+      containers:
+        - name: "mongo-chat"
+          image: "ageapps/docker-chat:mongo"
+          env:
+            - name: MONGO_DB_APP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo
+                  key: username
+            - name: MONGO_DB_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo
+                  key: password
+            - name: MONGO_DB_APP_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mongo
+                  key: database
+          ports:
+            - name: http
+              containerPort: 27017
