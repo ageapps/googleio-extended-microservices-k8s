@@ -5,8 +5,7 @@ services:
     ports:
       - "8080:5000"
     volumes:
-      - ./database:/data/db # volume in host -> $(pwd)/database
-      - ./app/public/uploads:/server/public/uploads
+      - ./server/app/public/uploads:/server/public/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -24,8 +23,8 @@ services:
       - MONGO_DB_APP_PASSWORD=node
       - MONGO_DB_APP_USERNAME=node
       - MONGO_DB_APP_DATABASE=nodedb
-    # volumes:
-    #   - ./database:/data # volume in host -> $(pwd)/database
+    volumes:
+      - ./database:/data # volume in host -> $(pwd)/database
     healthcheck:
       test: ["CMD", "echo", "show dbs", "|", "mongo"]
       interval: 30s
