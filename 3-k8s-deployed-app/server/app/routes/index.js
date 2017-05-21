@@ -9,7 +9,10 @@ var userController = require('../controllers/user_controller');
 /* GET home page. */
 router.get('/', function (req, res, next) {
     if (!req.session.user) {
-        res.redirect('/login');
+         res.render('login', {
+             title: 'SocketIO Chat Demo',
+             host: os.hostname()
+         });
     } else {
         res.render('index', {
             title: 'SocketIO Chat Demo',
